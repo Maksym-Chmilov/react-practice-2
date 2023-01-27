@@ -2,10 +2,14 @@ import React, { Component } from 'react';
 import { data } from '../data/user';
 import { UsersList } from './UsersList/UsersList';
 import { Section } from './Section/Section';
+import { Button } from './Button/Button';
+import { AddForm } from './AddForm/AddForm';
+import { nanoid } from 'nanoid';
 
 export class App extends Component {
   state = {
     users: data,
+    isFormShown: false,
   };
 
   deleteUser = userId => {
@@ -30,12 +34,40 @@ export class App extends Component {
     });
   };
 
+  openForm = () => {
+    this.setState({ isFormShown: true });
+  };
+
+  closeForm = () => {
+    this.setState({ isFormShown: false });
+  };
+
+  addUser = data => {
+    const newUser = {
+      id: nanoid(),
+      hasJob: false,
+      ...data,
+    };
+    this.setState(prevState => ({
+      users: [newUser, ...prevState.users],
+    }));
+  };
+
   render() {
-    const { users } = this.state;
+    const { users, isFormShown } = this.state;
     return (
       <>
         <Section>
-          <UsersList users={users} delUser={this.deleteUser} changeStatus={this.changeStatus} />
+          <UsersList
+            users={users}
+            delUser={this.deleteUser}
+            changeStatus={this.changeStatus}
+          />
+          {isFormShown ? (
+            <AddForm addUser={this.addUser} closeForm={this.closeForm} />
+          ) : (
+            <Button text="Add user" clickHandler={this.openForm} />
+          )}
         </Section>
       </>
     );
